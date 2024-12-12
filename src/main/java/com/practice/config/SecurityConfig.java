@@ -1,5 +1,6 @@
 package com.practice.config;
 
+import com.practice.filter.JWTFilter;
 import com.practice.filter.LoginFilter;
 import com.practice.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +55,11 @@ public class SecurityConfig {
                 .requestMatchers("/login", "/", "/join").permitAll()
                 .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated());
+
+        //JWTFilter 등록
+        http
+            .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+
         //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
         http
             .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
