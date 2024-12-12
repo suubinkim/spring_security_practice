@@ -1,5 +1,6 @@
 package com.practice.controller;
 
+import com.practice.repository.RefreshRepository;
 import com.practice.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReissueController {
 
     private final JWTUtil jwtUtil;
+    private final RefreshRepository refreshRepository;
 
     @PostMapping("/reissue")
     public ResponseEntity<String> reissue(HttpServletRequest request, HttpServletResponse response) {
@@ -57,6 +59,13 @@ public class ReissueController {
 
         if (!category.equals("refresh")) {
             //response status code
+            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
+        }
+
+        //DB에 저장되어 있는지 확인
+        Boolean isExist = refreshRepository.existsByRefresh(refresh);
+        if (Boolean.FALSE.equals(isExist)) {
+            //response body
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
