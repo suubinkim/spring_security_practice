@@ -6,14 +6,18 @@ import com.practice.service.impl.CustomUserDetails;
 import com.practice.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Iterator;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,9 +31,9 @@ import org.springframework.util.StreamUtils;
  * com.practice.filter
  *   |_ LoginFilter
  * </pre>
- * 
- * @Author  : subin1
- * @Date    : 12/11/24 2:43 PM
+ *
+ * @Author : subin1
+ * @Date : 12/11/24 2:43 PM
  * @description : LoginFilter
  */
 @RequiredArgsConstructor
@@ -80,14 +84,30 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String role = auth.getAuthority();
 
-        String token = jwtUtil.createJwt(username, role, 60*60*10L);
+        //토큰 생성
+        String access = jwtUtil.createJwt("access", username, role, 600000L);
+        String refresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
 
-        response.addHeader("Authorization", "Bearer " + token);
+        //응답 설정
+        response.setHeader("access", access);
+        response.addCookie(createCookie("refresh", refresh));
+        response.setStatus(HttpStatus.OK.value());
     }
 
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         response.setStatus(401);
+    }
+
+    private Cookie createCookie(String key, String value) {
+
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(24 * 60 * 60);
+        //cookie.setSecure(true);
+        //cookie.setPath("/");
+        cookie.setHttpOnly(true);
+
+        return cookie;
     }
 }

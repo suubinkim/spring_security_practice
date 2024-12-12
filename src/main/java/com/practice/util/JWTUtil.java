@@ -1,10 +1,12 @@
 package com.practice.util;
 
 import io.jsonwebtoken.Jwts;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,9 +15,9 @@ import org.springframework.stereotype.Component;
  * com.practice.util
  *   |_ JWTUtil
  * </pre>
- * 
- * @Author  : subin1
- * @Date    : 12/11/24 4:51 PM
+ *
+ * @Author : subin1
+ * @Date : 12/11/24 4:51 PM
  * @description : JWTUtil
  */
 @Component
@@ -24,7 +26,7 @@ public class JWTUtil {
     private final SecretKey secretKey;
 
 
-    public JWTUtil(@Value("${spring.jwt.secret}")String secret) {
+    public JWTUtil(@Value("${spring.jwt.secret}") String secret) {
 
 
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
@@ -45,14 +47,20 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String createJwt(String username, String role, Long expiredMs) {
+    public String createJwt(String category, String username, String role, Long expiredMs) {
 
         return Jwts.builder()
-            .claim("username", username)
-            .claim("role", role)
-            .issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + expiredMs))
-            .signWith(secretKey)
-            .compact();
+                .claim("category", category)
+                .claim("username", username)
+                .claim("role", role)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiredMs))
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String getCategory(String token) {
+
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
     }
 }
