@@ -3,6 +3,7 @@ package com.practice.config;
 import com.practice.filter.CustomLogoutFilter;
 import com.practice.filter.JWTFilter;
 import com.practice.filter.LoginFilter;
+import com.practice.oauth.CustomSuccessHandler;
 import com.practice.repository.RefreshRepository;
 import com.practice.service.CustomOAuth2UserService;
 import com.practice.util.JWTUtil;
@@ -37,11 +38,12 @@ import java.util.Collections;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    //AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
+
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomSuccessHandler customSuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -62,7 +64,8 @@ public class SecurityConfig {
         http
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService)));
+                                .userService(customOAuth2UserService))
+                        .successHandler(customSuccessHandler));
 
         //경로별 인가 작업
         http
@@ -97,6 +100,7 @@ public class SecurityConfig {
                     configuration.setAllowedHeaders(Collections.singletonList("*"));
                     configuration.setMaxAge(3600L);
 
+                    configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
                     configuration.setExposedHeaders(Collections.singletonList("Authorization"));
 
                     return configuration;

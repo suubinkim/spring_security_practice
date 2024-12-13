@@ -9,9 +9,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * com.practice.config
  *   |_ WebConfig
  * </pre>
- * 
- * @Author  : subin1
- * @Date    : 12/12/24 10:19 AM
+ *
+ * @Author : subin1
+ * @Date : 12/12/24 10:19 AM
  * @description : WebConfig
  */
 @Configuration
@@ -21,6 +21,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry corsRegistry) {
 
         corsRegistry.addMapping("/**")
-            .allowedOrigins("http://localhost:3000");
+                .exposedHeaders("Set-Cookie")
+                .allowedOrigins("http://localhost:3000");
     }
 }
