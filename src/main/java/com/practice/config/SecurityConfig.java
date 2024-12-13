@@ -1,9 +1,10 @@
 package com.practice.config;
 
+import com.practice.filter.CustomLogoutFilter;
 import com.practice.filter.JWTFilter;
 import com.practice.filter.LoginFilter;
-import com.practice.filter.CustomLogoutFilter;
 import com.practice.repository.RefreshRepository;
+import com.practice.service.CustomOAuth2UserService;
 import com.practice.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +41,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -55,6 +57,12 @@ public class SecurityConfig {
         //http basic 인증 방식 disable
         http
                 .httpBasic(AbstractHttpConfigurer::disable);
+
+        //oauth2
+        http
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService)));
 
         //경로별 인가 작업
         http
