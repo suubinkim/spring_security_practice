@@ -1,33 +1,26 @@
 package com.practice.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.practice.dto.LoginDto;
 import com.practice.entity.Refresh;
 import com.practice.repository.RefreshRepository;
 import com.practice.service.impl.CustomUserDetails;
 import com.practice.util.JWTUtil;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.util.StreamUtils;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 
 /**
  * <pre>
@@ -50,23 +43,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         // 클라이언트 요청에서 username, password 추출
-//        String username = obtainUsername(request);
-//        String password = obtainPassword(request);
+        String username = obtainUsername(request);
+        String password = obtainPassword(request);
         // json으로 받기
-        LoginDto loginDto = new LoginDto();
-
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            ServletInputStream inputStream = request.getInputStream();
-            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-            loginDto = objectMapper.readValue(messageBody, LoginDto.class);
-
-        } catch (IOException e) {
-            log.error("[LoginFilter] IOException");
-        }
-
-        String username = loginDto.getUsername();
-        String password = loginDto.getPassword();
+//        LoginDto loginDto = new LoginDto();
+//
+//        try {
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            ServletInputStream inputStream = request.getInputStream();
+//            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+//            loginDto = objectMapper.readValue(messageBody, LoginDto.class);
+//
+//        } catch (IOException e) {
+//            log.error("[LoginFilter] IOException");
+//        }
+//
+//        String username = loginDto.getUsername();
+//        String password = loginDto.getPassword();
 
         //스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야 함
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
