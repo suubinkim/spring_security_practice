@@ -1,0 +1,42 @@
+<html lang="">
+<head>
+    <title>main</title>
+</head>
+<body>
+Welcome, anonymousUser!
+
+<form id="loginForm" onsubmit="login(event)">
+    <label for="username">ID:</label>
+    <input type="text" id="username" name="username" required>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <button type="submit">Login</button>
+</form>
+<table class="table table-striped">
+    <tr>
+        <td><a href="/oauth2/authorization/naver">naver</a></td>
+    </tr>
+    <tr>
+        <td><a href="/oauth2/authorization/google">google</a></td>
+    </tr>
+</table>
+<p id="responseMessage"></p>
+<script>
+    async function login(event) {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        const response = await fetch('http://localhost:8011/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username, password}),
+        });
+        const result = await response.json();
+        document.getElementById('responseMessage').textContent = response.ok
+            ? `Welcome`
+            : `Error`;
+    }
+</script>
+</body>
+</html>
