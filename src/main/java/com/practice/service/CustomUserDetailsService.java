@@ -1,4 +1,4 @@
-package com.practice.service.impl;
+package com.practice.service;
 
 import com.practice.entity.User;
 import com.practice.repository.UserRepository;

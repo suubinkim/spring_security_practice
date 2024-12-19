@@ -70,7 +70,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/", "/join", "/reissue").permitAll()
+                        .requestMatchers("/login", "/", "/join", "/reissue", "/main", "/oauth2-jwt-header").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated());
 
@@ -94,7 +94,7 @@ public class SecurityConfig {
 
                     CorsConfiguration configuration = new CorsConfiguration();
 
-                    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3001"));
                     configuration.setAllowedMethods(Collections.singletonList("*"));
                     configuration.setAllowCredentials(true);
                     configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -102,6 +102,7 @@ public class SecurityConfig {
 
                     configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
                     configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+                    configuration.setExposedHeaders(Collections.singletonList("access"));
 
                     return configuration;
                 })));

@@ -13,6 +13,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -55,10 +57,14 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 
         //응답 설정
-        response.setHeader("access", token);
+        response.addCookie(createCookie("access", token));
         response.addCookie(createCookie("refresh", refresh));
 
-        response.sendRedirect("http://localhost:8011/");
+        // redirect query param 인코딩 후 전달
+        // 이후에 JWT 를 읽어서 데이터를 가져올 수도 있지만, JWT 파싱 비용이 많이 들기 때문에
+        // 처음 JWT 발급할 때 이름을 함께 넘긴 후, 로컬 스토리지에 저장한다.
+        String encodedName = URLEncoder.encode(username, StandardCharsets.UTF_8);
+        response.sendRedirect("http://localhost:3001/oauth2-jwt-header?name=" + encodedName);
     }
 
     private Cookie createCookie(String key, String value) {

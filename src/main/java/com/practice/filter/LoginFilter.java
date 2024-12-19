@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.practice.dto.LoginDto;
 import com.practice.entity.Refresh;
 import com.practice.repository.RefreshRepository;
-import com.practice.service.impl.CustomUserDetails;
+import com.practice.service.CustomUserDetails;
 import com.practice.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
@@ -113,7 +113,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24 * 60 * 60);
         //cookie.setSecure(true);
-        //cookie.setPath("/");
+        cookie.setPath("/");
         cookie.setHttpOnly(true);
 
         return cookie;
