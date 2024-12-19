@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom";
 const Home = () => {
     useNavigate();
     const {isLoggedIn, loginUser} = useLogin();
+    const {setIsLoggedIn, setLoginUser} = useLogin();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -45,10 +46,26 @@ const Home = () => {
             });
     }
 
+    const fetchLogout = async () => {
+        try {
+            // access token 삭제 (로컬 스토리지)
+            window.localStorage.removeItem("access");
+            window.localStorage.removeItem("name");
+
+            setIsLoggedIn(false);
+            setLoginUser(null);
+
+            // eslint-disable-next-line no-restricted-globals
+            location.href = "/"
+        } catch (error) {
+            console.log("error: ", error);
+        }
+    }
+
     const loginHandler = async (e) => {
         e.preventDefault();
         const credentials = {username, password};
-        fetchLogin(credentials);
+        await fetchLogin(credentials);
     }
 
     return (
@@ -56,8 +73,9 @@ const Home = () => {
             <div>
                 <h1>Home</h1>
                 {isLoggedIn && <span>{loginUser}님 환영합니다.</span>}
+                {isLoggedIn && <button onClick={fetchLogout}>Logout</button>}
             </div>
-            <form id="loginForm" onSubmit={loginHandler}>
+            {!isLoggedIn && <form id="loginForm" onSubmit={loginHandler}>
                 <p><span className='label'>Username</span><input className='input-class' type="text" value={username}
                                                                  onChange={(e) => setUsername(e.target.value)}
                                                                  placeholder='username'/></p>
@@ -67,20 +85,23 @@ const Home = () => {
                                                                  placeholder='password'/></p>
                 <button type="submit">Login</button>
             </form>
-            <div className='social-login' style={{textAlign: "-webkit-center"}}>
-                <table className="table table-striped">
-                    <tbody>
-                    <tr>
-                        <td><a href="http://localhost:8011/oauth2/authorization/naver">naver</a></td>
-                    </tr>
-                    </tbody>
-                    <tbody>
-                    <tr>
-                        <td><a href="http://localhost:8011/oauth2/authorization/google">google</a></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+            }
+            {!isLoggedIn &&
+                <div className='social-login' style={{textAlign: "-webkit-center"}}>
+                    <table className="table table-striped">
+                        <tbody>
+                        <tr>
+                            <td><a href="http://localhost:8011/oauth2/authorization/naver">naver</a></td>
+                        </tr>
+                        </tbody>
+                        <tbody>
+                        <tr>
+                            <td><a href="http://localhost:8011/oauth2/authorization/google">google</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            }
         </div>
 
     );
