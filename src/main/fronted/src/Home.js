@@ -1,7 +1,10 @@
+import {useLogin} from "./AuthContext";
 import {useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 const Home = () => {
-
+    useNavigate();
+    const {isLoggedIn, loginUser} = useLogin();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -27,61 +30,41 @@ const Home = () => {
                     console.log(`${key} = ${value}`);
                 }
                 const token = response.headers.get('access'); // 예: 토큰 값
+                const name = response.headers.get('name');
                 if (!token) {
                     throw new Error('Authorization-Token 헤더가 없습니다.');
                 }
-                return token;
-            })
-            .then(token => {
-                // 추출한 헤더 값을 사용하여 두 번째 fetch 요청
                 window.localStorage.setItem("access", token);
-                return getUserInfo(token)
-            })
-            .then(data => {
-                console.log('두 번째 요청 응답 데이터:', data);
-                // const messageElement = document.getElementById('responseMessage');
-                // messageElement.textContent = `${data.data}`;
+                window.localStorage.setItem("name", name);
+
+                // eslint-disable-next-line no-restricted-globals
+                location.href = "/"
             })
             .catch(error => {
                 console.error('에러 발생:', error);
-                // const messageElement = document.getElementById('responseMessage');
-                // messageElement.textContent = `anonymousUser`;
             });
-    }
-
-    async function getUserInfo(token) {
-        try {
-            const response = await fetch('http://localhost:8011/user', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}` // 헤더 값으로 토큰 추가
-                }
-            });
-
-            if (!response.ok) {
-                // HTTP 응답 상태 코드 확인
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            // JSON 응답 파싱
-            return await response.json(); // 데이터 반환
-        } catch (error) {
-            console.error('Error fetching user info:', error); // 오류 처리
-            throw error; // 필요한 경우 호출한 곳에서 추가 처리하도록 예외 다시 던지기
-        }
     }
 
     const loginHandler = async (e) => {
         e.preventDefault();
-        const credentials = { username, password };
+        const credentials = {username, password};
         fetchLogin(credentials);
     }
 
     return (
         <div>
-            <h1>Home</h1>
+            <div>
+                <h1>Home</h1>
+                {isLoggedIn && <span>{loginUser}님 환영합니다.</span>}
+            </div>
             <form id="loginForm" onSubmit={loginHandler}>
-                <p><span className='label'>Username</span><input className='input-class' type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder='username' /></p>
-                <p><span className='label'>Password</span><input className='input-class' type="password" autoComplete='off' value={password} onChange={(e) => setPassword(e.target.value)} placeholder='password' /></p>
+                <p><span className='label'>Username</span><input className='input-class' type="text" value={username}
+                                                                 onChange={(e) => setUsername(e.target.value)}
+                                                                 placeholder='username'/></p>
+                <p><span className='label'>Password</span><input className='input-class' type="password"
+                                                                 autoComplete='off' value={password}
+                                                                 onChange={(e) => setPassword(e.target.value)}
+                                                                 placeholder='password'/></p>
                 <button type="submit">Login</button>
             </form>
             <div className='social-login' style={{textAlign: "-webkit-center"}}>

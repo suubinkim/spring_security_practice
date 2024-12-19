@@ -3,7 +3,6 @@ package com.practice.controller;
 import com.practice.dto.ResponseDto;
 import com.practice.service.CustomUserDetails;
 import com.practice.service.UserService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
