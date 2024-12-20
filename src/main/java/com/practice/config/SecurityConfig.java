@@ -3,6 +3,8 @@ package com.practice.config;
 import com.practice.filter.CustomLogoutFilter;
 import com.practice.filter.JWTFilter;
 import com.practice.filter.LoginFilter;
+import com.practice.oauth.CustomAccessDeniedHandler;
+import com.practice.oauth.CustomAuthenticationEntryPoint;
 import com.practice.oauth.CustomSuccessHandler;
 import com.practice.repository.RefreshRepository;
 import com.practice.service.CustomOAuth2UserService;
@@ -45,6 +47,8 @@ public class SecurityConfig {
     private final RefreshRepository refreshRepository;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -104,6 +108,12 @@ public class SecurityConfig {
                     configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie", "name", "access"));
                     return configuration;
                 })));
+
+        http
+                .exceptionHandling(exceptionConfig ->
+                        exceptionConfig.authenticationEntryPoint(authenticationEntryPoint)
+                                .accessDeniedHandler(customAccessDeniedHandler)
+                );
 
         return http.build();
     }
