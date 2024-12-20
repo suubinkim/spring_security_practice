@@ -48,13 +48,23 @@ const Home = () => {
 
     const fetchLogout = async () => {
         try {
-            // access token 삭제 (로컬 스토리지)
-            window.localStorage.removeItem("access");
-            window.localStorage.removeItem("name");
+            // 로그아웃 요청 시 백엔드에서 refresh token 블랙리스트 처리 (혹은 refresh 토큰 DB 에서 삭제)
+            const response = await fetch("http://localhost:8011/logout", {
+                method: "POST",
+                credentials: "include",
+            });
 
-            setIsLoggedIn(false);
-            setLoginUser(null);
+            if (response.ok) {
+                alert("logout successful");
+                // access token 삭제 (로컬 스토리지)
+                window.localStorage.removeItem("access");
+                window.localStorage.removeItem("name");
 
+                setIsLoggedIn(false);
+                setLoginUser(null);
+            } else {
+                alert("logout failed");
+            }
             // eslint-disable-next-line no-restricted-globals
             location.href = "/"
         } catch (error) {
