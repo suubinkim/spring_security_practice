@@ -1,7 +1,7 @@
 import fetchReissue from "./fetchReissue";
 
 // 권한이 있는 페이지 접근 시 access 토큰을 검증
-const fetchAuthorizedPage = async (url, navigate, location) => {
+const fetchAuthorizedPage = async (url) => {
     try {
         const response = await fetch(url, {
             method: "GET",
@@ -18,15 +18,17 @@ const fetchAuthorizedPage = async (url, navigate, location) => {
             // 재발급 성공 시 다시 권한 페이지 fetch, 재발급 실패 시 로그인 페이지로
             const reissueSuccess = await fetchReissue();
             if (reissueSuccess) {
-                await fetchAuthorizedPage(url, navigate, location);
+                await fetchAuthorizedPage(url);
             } else {
                 // useLocation 으로 얻은 path 를 useNavigate 을 사용해 state 에 set
                 alert('토큰 재발급 실패');
-                navigate('/', { state: location.pathname });
+                // eslint-disable-next-line no-restricted-globals
+                location.href = "/"
             }
         } else {
             alert('관리자가 아닙니다.');
-            navigate('/', { state: location.pathname });
+            // eslint-disable-next-line no-restricted-globals
+            location.href = "/"
         }
     } catch (error) {
         console.log('error: ', error);
